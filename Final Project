@@ -1,0 +1,162 @@
+##Research Question: 
+##Does primary education completion rate affect a country’s unemployment rate and current GDP? 
+
+#############################################################################
+##Part 1######################
+
+wdidata <- read.csv("wdidata20.csv")
+##There are 8856 observations in this data. 
+
+dataset <- subset(wdidata, select=c(country, region, year, NY.GDP.MKTP.CD, SE.PRM.CMPT.ZS, SL.UEM.TOTL.NE.ZS, SE.ADT.LITR.ZS))
+##The data was subsetted to only include these five variables. I will be looking at the relationship 
+##between these variables throughout my project. 
+
+dataset1980 <- subset(dataset, (year <= 1999))
+dataset2000 <- subset(dataset, (year >= 2000))
+##I am subsetting the subsetted data into two groups; data from 1980-1999 and data from 2000 to 2020. 
+##This is so that I can compare and see if the relationships between variables are consistent throughout these 40 years. 
+
+#############################################################################
+##Part 2######################
+##Unemployment Rate over Time 
+
+ggplot(dataset1980, aes(x=year, y=SL.UEM.TOTL.NE.ZS, color=region)) +
+  geom_point() +
+  ggtitle("Unemployment Rate Over Time") +
+  xlab("Year")+
+  ylab("Unemployment Rate")
+##The unemployment throughout the world has slightly increased over time from 1980. Consistently, the regions with the highest 
+##unemployment rate are Europe & Central Asia, Latin America & Caribbean, and Sub-Saharan Africa. 
+
+ggplot(dataset2000, aes(x=year, y=SL.UEM.TOTL.NE.ZS, color=region)) +
+  geom_point() +
+  ggtitle("Unemployment Rate Over Time") +
+  xlab("Year")+
+  ylab("Unemployment Rate")
+##The unemployment rate throughout the world has stayed relatively consistent since 2000. The maximum has been around 20% every year, with outliers 
+##with high unemployment rates in Europe & Central Asia and Sub-Saharan Africa. It seems that Latin America & Caribbean region's unemployment rates have decreased. 
+
+#############################################################################
+##Part 3######################
+##Unemployment rate by region and GDP by region 
+
+boxplot(SL.UEM.TOTL.NE.ZS ~ region, data=dataset,
+        main="Unemployment Rate by Region",
+        ylab="Unemployment Rate",
+        xlab="Region",
+        col = c("purple"))
+##Unemployment rates are especially low in North America, and high in Sub-Saharan Africa 
+
+boxplot(NY.GDP.MKTP.CD ~ region, data=dataset,
+        main="GDP by Region",
+        ylab="GDP Current US$",
+        xlab="Region",
+        col = c("blue"), 
+        themes(axis.text.x=element_text(size=1)))
+##North America is surpassing all other regions in GDP, with East Asia & Pacific as second. 
+
+#############################################################################
+##Part 4######################
+##Does primary education completion rate affect a country's unemployment rate? 
+
+plot(x=dataset1980$SE.PRM.CMPT.ZS,
+     y=dataset1980$SL.UEM.TOTL.NE.ZS,
+     main = "Relationship Between Primary Ed Completion Rate & Unemployment Rate",
+     xlab = "Primary Ed Completion Rate", 
+     ylab = "Unemployment Rate", 
+     pch=16)
+cor(dataset1980$SE.PRM.CMPT.ZS, dataset1980$SL.UEM.TOTL.NE.ZS, use = "pairwise")
+##The correlation is 0.027. There is almost no correlation between the two variables from the years 1980 to 1999. 
+
+plot(x=dataset2000$SE.PRM.CMPT.ZS,
+     y=dataset2000$SL.UEM.TOTL.NE.ZS,
+     main = "Relationship Between Primary Ed Completion Rate & Unemployment Rate",
+     xlab = "Primary Ed Completion Rate", 
+     ylab = "Unemployment Rate", 
+     pch=16)
+cor(dataset2000$SE.PRM.CMPT.ZS, dataset2000$SL.UEM.TOTL.NE.ZS, use = "pairwise")
+##The correlation is 0.05. There is almost no correlation between the two variables from the years 2000 to 2020. 
+
+##Overall, there is little to no correlation between primary education completion rate and unemployment rate. 
+
+#############################################################################
+##Part 5######################
+##Does adult total literacy rate affect a country's unemployment rate? 
+
+plot(x=dataset1980$SE.ADT.LITR.ZS,
+     y=dataset1980$SL.UEM.TOTL.NE.ZS,
+     main = "Relationship Between Literacy Rate & Unemployment Rate",
+     xlab = "Literacy Rate", 
+     ylab = "Unemployment Rate", 
+     pch=16)
+cor(dataset1980$SE.ADT.LITR.ZS, dataset1980$SL.UEM.TOTL.NE.ZS, use = "pairwise")
+##The correlation is 0.31, higher than correlation with primary education completion rate. 
+##There seems to be higher unemployment with higher the literacy, which is interesting and unexpected. 
+
+plot(x=dataset2000$SE.ADT.LITR.ZS,
+     y=dataset2000$SL.UEM.TOTL.NE.ZS,
+     main = "Relationship Between Literacy Rate & Unemployment Rate",
+     xlab = "Literacy Rate", 
+     ylab = "Unemployment Rate", 
+     pch=16)
+cor(dataset2000$SE.ADT.LITR.ZS, dataset2000$SL.UEM.TOTL.NE.ZS, use = "pairwise")
+##In later years between 2000 and 2020, there seems to be much less of a correlation between literacy and unemployment. 
+##The correlation is 0.18. Again, the higher the literacy rate the higher the unemployment rate. 
+
+##Overall, there is little correlation between literacy rate and unemployment rate, though they seem to be somewhat positively correlated. 
+##As literacy rate increases, so does the unemployment rate. 
+
+#############################################################################
+##Part 6######################
+##Does unemployment rate affect a country's GDP? Are there patterns with depending on regions? 
+
+install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(dataset1980, aes(x=SL.UEM.TOTL.NE.ZS, y=NY.GDP.MKTP.CD, color=region)) +
+  geom_point() +
+  ggtitle("Relationship between Unemployment Rate & GDP") +
+  xlab("Unemployment Rate")+
+  ylab("GDP Current US$")
+cor(dataset1980$SL.UEM.TOTL.NE.ZS, dataset1980$NY.GDP.MKTP.CD, use = "pairwise")
+##There is a -0.08 correlation between unemployment rate and GDP. As unemployment increases, GDP stays 
+##very low. The highest GDP is clearly in North American region as well as the East Asia & Pacific regions, 
+##both of which have under 10% unemployment rates. 
+
+ggplot(dataset2000, aes(x=SL.UEM.TOTL.NE.ZS, y=NY.GDP.MKTP.CD, color=region)) +
+  geom_point() +
+  ggtitle("Relationship between Unemployment Rate & GDP") +
+  xlab("Unemployment Rate")+
+  ylab("GDP Current US$")
+cor(dataset2000$SL.UEM.TOTL.NE.ZS, dataset2000$NY.GDP.MKTP.CD, use = "pairwise")
+##Recently, from the years 2000 to 2020, the relationship is even stronger than in the past. The correlation is -0.09. The unemployment is consistently low after around 20% 
+##unemployment rate, and it is mostly the Sub-Saharan Africa region and Europe & Central Asia. 
+##Again, North America and the East Asia & Pacific region have the highest GDPs, though they have exceeded the other regions even moreso in the recent years. 
+
+##Overall, there is a clear correlation between unemployment rate and GDP. There is also a pattern with regions, and the pattern has only become 
+##stronger since 2000. North America has the highest GDP, East Asia & Pacific has the second highest, with Europe & Central Asia the third highest. 
+##The regions with the highest unemployment and lowest GDP are ironically also from the Europe & Central Asia region and also from Sub-Saharan Africa. 
+
+#############################################################################
+##Part 7######################
+##Does primary education completion rate affect GDP? Are there patterns depending on region? 
+
+ggplot(dataset1980, aes(x=SE.PRM.CMPT.ZS, y=NY.GDP.MKTP.CD, color=region)) +
+  geom_point() +
+  ggtitle("Relationship between Primary Ed Completion Rate & GDP") +
+  xlab("Primary Ed Completion Rate")+
+  ylab("GDP Current US$")
+cor(dataset1980$SE.PRM.CMPT.ZS, dataset1980$NY.GDP.MKTP.CD, use = "pairwise")
+##There is a positive correlation of 0.26 between primary education completion rate and GDP. 
+##Lowest primary education completion rates are in Sub-Saharan Africa, with the highest in East Asia & Pacific region. 
+##There is a concentration of high primary education completion rate for Europe & Central Asia. 
+
+ggplot(dataset2000, aes(x=SE.PRM.CMPT.ZS, y=NY.GDP.MKTP.CD, color=region)) +
+  geom_point() +
+  ggtitle("Relationship between Primary Ed Completion Rate & GDP") +
+  xlab("Primary Ed Completion Rate")+
+  ylab("GDP Current US$")
+cor(dataset2000$SE.PRM.CMPT.ZS, dataset2000$NY.GDP.MKTP.CD, use = "pairwise")
+##The correlation is similar but less -- 0.12. The concentration of Europe & Central Asia is still there, but East Asia & Pacific region 
+##seems to surpass in terms of GDP and primary education completion rate now. The lowest GDP/education rate stays the same 
+##in Sub-Saharan Africa, and the highest GDP is North America. 
